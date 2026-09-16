@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    config:
+      enabled: false
+
+    gateway:
+      routes:
+        - id: order-service
+          uri: http://order-management-service:8083   # ← order management
+          predicates:
+            - Path=/api/orders/**
+        - id: restaurant-service
+          uri: http://restaurant-management-service:8082 # ← restaurant management
+          predicates:
+            - Path=/api/restaurants/**
+        - id: delivery-service
+          uri: http://delivery-management-service:8084 # ← delivery management
+          predicates:
+            - Path=/api/deliveries/**
+        - id: admin-service
+          uri: http://restaurant-management-service:8082   # ← admin management
+          predicates:
+            - Path=/api/admin/**
+        - id: drivers-service
+          uri: http://delivery-management-service:8084     # ← drivers management
+          predicates:
+            - Path=/api/drivers/**

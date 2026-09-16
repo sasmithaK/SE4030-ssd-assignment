@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restaurant-management-service-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: restaurant-management-service
+  template:
+    metadata:
+      labels:
+        app: restaurant-management-service
+    spec:
+      containers:
+        - name: restaurant-management-service
+          image: restaurant-management-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8082
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql:3306/restaurantdb"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "root"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "root"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: restaurant-management-service
+spec:
+  selector:
+    app: restaurant-management-service
+  ports:
+    - protocol: TCP
+      port: 8082
+      targetPort: 8082
+  type: ClusterIP
