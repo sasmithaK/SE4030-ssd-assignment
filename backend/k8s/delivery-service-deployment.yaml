@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: delivery-management-service-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: delivery-management-service
+  template:
+    metadata:
+      labels:
+        app: delivery-management-service
+    spec:
+      containers:
+        - name: delivery-management-service
+          image: delivery-management-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8084
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql:3306/deliverydb"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "root"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "root"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: delivery-management-service
+spec:
+  selector:
+    app: delivery-management-service
+  ports:
+    - protocol: TCP
+      port: 8084
+      targetPort: 8084
+  type: ClusterIP
+

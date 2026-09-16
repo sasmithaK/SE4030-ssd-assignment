@@ -1,0 +1,99 @@
+/* Container for the restaurant list page */
+.restaurant-list-container {
+    padding: 40px;
+    background-color: #f8f9fa;
+    max-width: 1200px;
+    margin: auto;
+  }
+  
+  /* Heading */
+  .restaurant-list-container h2 {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 30px;
+  }
+  
+  /* Restaurant cards layout */
+  .restaurant-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  /* Card style override for Ant Design */
+  .restaurant-cards .ant-card {
+    width: 300px;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  /* Hover effect */
+  .restaurant-cards .ant-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Image styling */
+  .restaurant-cards img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 0 0 12px 12px;
+  }
+  
+  /* Text styling inside card */
+  .restaurant-cards p {
+    font-size: 1rem;
+    color: #555;
+    margin: 6px 0;
+  }
+  
+  /* Pagination controls */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+    gap: 20px;
+  }
+  
+  .pagination button {
+    font-size: 1rem;
+    padding: 8px 16px;
+  }
+  
+  /* Responsive behavior */
+  @media (max-width: 768px) {
+    .restaurant-cards {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .restaurant-cards .ant-card {
+      width: 90%;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .restaurant-list-container {
+      padding: 20px;
+    }
+  
+    .restaurant-list-container h2 {
+      font-size: 1.5rem;
+    }
+  
+    .pagination span {
+      font-size: 0.9rem;
+    }
+  
+    .pagination button {
+      font-size: 0.9rem;
+      padding: 6px 12px;
+    }
+  }
+  
