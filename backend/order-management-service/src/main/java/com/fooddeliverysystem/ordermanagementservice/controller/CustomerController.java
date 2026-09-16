@@ -18,11 +18,15 @@ public class CustomerController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
+    // TODO [VULN-6] Security Vulnerability (A03: Injection):
+    // Missing @Valid annotation. Input validation is not enforced for customerDTO.
     public CustomerDTO registerCustomer(@RequestBody CustomerDTO customerDTO) {
         return customerService.registerCustomer(customerDTO);
     }
 
     @PostMapping("/login")
+    // TODO [VULN-6] Security Vulnerability (A03: Injection):
+    // Missing @Valid annotation. Input validation is not enforced for customerDTO.
     public CustomerDTO login(@RequestBody CustomerDTO customerDTO) {
         return customerService.loginCustomer(customerDTO.getEmail(), customerDTO.getPassword());
     }

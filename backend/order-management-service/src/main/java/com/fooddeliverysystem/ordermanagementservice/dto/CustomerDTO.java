@@ -8,6 +8,8 @@ import lombok.*;
 @Builder
 public class CustomerDTO {
     private Long id;
+    // TODO [VULN-6] Security Vulnerability (A03: Injection):
+    // Missing validation annotations (e.g., @NotBlank, @Email, @Size).
     private String fullname;
     private String email;
     private String phoneNumber;
