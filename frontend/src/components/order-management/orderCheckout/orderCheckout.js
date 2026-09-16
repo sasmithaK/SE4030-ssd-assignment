@@ -16,6 +16,9 @@ const OrderCheckout = () => {
   useEffect(() => {
     const fetchCustomerOrders = async () => {
       try {
+        // TODO [VULN-7] Security Vulnerability (A01: Broken Access Control / IDOR):
+        // Hardcoded customer ID '17' allows any user to see this customer's orders.
+        // Needs to be updated to use the ID from the logged-in user's token or localStorage.
         const response = await axios.get('http://localhost:8083/api/orders/customer/17');
         setOrders(response.data);
         setLoading(false);
