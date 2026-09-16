@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/driver")
 @RequiredArgsConstructor
+// VULNERABLE (VULN-5): wildcard CORS allows requests from any origin, not just the trusted frontend
 @CrossOrigin(origins = "*") // Allow React frontend to hit the backend
 public class DriverController {
 
@@ -35,6 +36,7 @@ public class DriverController {
     }
 
     /** Update driver profile **/
+    // VULNERABLE (VULN-5): IDOR — no check that the authenticated user owns this driver id, so any logged-in driver can update anyone else's profile
     @PutMapping("/{id}")
     public ResponseEntity<Driver> updateDriver(
             @PathVariable Long id,
