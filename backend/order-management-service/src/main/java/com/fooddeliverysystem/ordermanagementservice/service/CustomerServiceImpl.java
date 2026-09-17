@@ -4,16 +4,20 @@ import com.fooddeliverysystem.ordermanagementservice.dto.CustomerDTO;
 import com.fooddeliverysystem.ordermanagementservice.model.Customer;
 import com.fooddeliverysystem.ordermanagementservice.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
     public CustomerDTO registerCustomer(CustomerDTO customerDTO) {
@@ -23,34 +27,37 @@ public class CustomerServiceImpl implements CustomerService {
 
         String name = customerDTO.getFullname() != null ? customerDTO.getFullname() : "Unknown User";
 
-        // TODO [VULN-3] Security Vulnerability (A02: Cryptographic Failures):
-        // Plaintext password is being stored in the database.
-        // Need to add BCryptPasswordEncoder and hash the password before saving.
+        // [FIX VULN-3] Hashed the password before saving using BCrypt
         Customer customer = Customer.builder()
                 .fullname(name)
                 .email(customerDTO.getEmail())
                 .phoneNumber(customerDTO.getPhoneNumber())
                 .deliveryAddress(customerDTO.getDeliveryAddress())
-                .password(customerDTO.getPassword())
-                .confirmPassword(customerDTO.getConfirmPassword())
+                .password(passwordEncoder.encode(customerDTO.getPassword()))
+                .confirmPassword(passwordEncoder.encode(customerDTO.getConfirmPassword()))
                 .build();
 
         customer = customerRepository.save(customer);
+        log.info("Customer registered successfully with email: {}", customer.getEmail());
         return convertToDTO(customer);
     }
 
     @Override
     public CustomerDTO loginCustomer(String email, String password) {
         Customer customer = customerRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Customer not found with email: " + email));
+                .orElseThrow(() -> {
+                    log.warn("Login attempt failed: customer not found for email {}", email);
+                    return new IllegalArgumentException("Customer not found with email: " + email);
+                });
 
-        if (!customer.getPassword().equals(password)) {
-            // TODO [VULN-9] Security Vulnerability (A09: Security Logging and Monitoring Failures):
-            // Failed login attempts are not logged. Need to add @Slf4j and log.warn() here.
+        // [FIX VULN-3] Use passwordEncoder.matches() instead of plaintext comparison
+        if (!passwordEncoder.matches(password, customer.getPassword())) {
+            // [FIX VULN-9] Added logging for failed authentication attempts
+            log.warn("Login attempt failed: incorrect password for email {}", email);
             throw new IllegalArgumentException("Incorrect password");
         }
 
+        log.info("Customer logged in successfully: {}", email);
         return convertToDTO(customer);
     }
 
@@ -77,10 +84,9 @@ public class CustomerServiceImpl implements CustomerService {
                 .email(customer.getEmail())
                 .phoneNumber(customer.getPhoneNumber())
                 .deliveryAddress(customer.getDeliveryAddress())
-                // TODO [VULN-7] Security Vulnerability (A02: Cryptographic Failures / A07: Auth Failures):
-                // Passwords are included in the JSON response. These should be removed or set to null.
-                .password(customer.getPassword())
-                .confirmPassword(customer.getConfirmPassword())
+                // [FIX VULN-7] Removed password and confirmPassword from response to prevent leak
+                .password(null)
+                .confirmPassword(null)
                 .build();
     }
 }
