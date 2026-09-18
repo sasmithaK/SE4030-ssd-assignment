@@ -16,7 +16,15 @@ const OrderCheckout = () => {
   useEffect(() => {
     const fetchCustomerOrders = async () => {
       try {
-        const response = await axios.get('http://localhost:8083/api/orders/customer/17');
+        // [FIX VULN-7] Retrieve current user from localStorage instead of hardcoding ID 17
+        const currentUserData = localStorage.getItem('currentUser');
+        const customerId = currentUserData ? JSON.parse(currentUserData).id : null;
+
+        if (!customerId) {
+          throw new Error('User not logged in');
+        }
+
+        const response = await axios.get(`http://localhost:8083/api/orders/customer/${customerId}`);
         setOrders(response.data);
         setLoading(false);
       } catch (err) {
