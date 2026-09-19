@@ -4,6 +4,7 @@ import com.fooddeliverysystem.ordermanagementservice.dto.OrderDTO;
 import com.fooddeliverysystem.ordermanagementservice.dto.OrderItemDTO;
 import com.fooddeliverysystem.ordermanagementservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,7 @@ public class OrderController {
     @ResponseStatus(HttpStatus.CREATED)
     public OrderDTO createOrderForCustomer(
             @PathVariable Long customerId,
-            @RequestBody OrderDTO orderDTO) {
+            @Valid @RequestBody OrderDTO orderDTO) {
         orderDTO.setCustomerId(customerId); // Set customer ID from path
         return orderService.createOrder(orderDTO);
     }
@@ -32,7 +33,7 @@ public OrderDTO updateOrderItem(
         @PathVariable Long orderId,
         @PathVariable Long itemId,
         @PathVariable Long customerId,
-        @RequestBody OrderItemDTO itemDTO) {
+        @Valid @RequestBody OrderItemDTO itemDTO) {
     return orderService.updateOrderItem(orderId, itemId, customerId, itemDTO);
 }
 
