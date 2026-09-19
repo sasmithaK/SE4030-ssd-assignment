@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+// VULNERABLE (VULN-9): no logging anywhere in this service — failed logins,
+// registrations, and profile updates are not recorded, so suspicious or
+// malicious activity cannot be detected or audited after the fact
 @Service
 @RequiredArgsConstructor
 public class DriverServiceImpl implements DriverService {
