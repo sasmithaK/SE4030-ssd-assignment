@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/driver")
@@ -19,14 +20,16 @@ public class DriverController {
 
     private final DriverService driverService;
 
+    // VULN-6 FIX: added @Valid to enforce DriverDTO's validation constraints
     @PostMapping("/register")
-    public ResponseEntity<Driver> registerDriver(@RequestBody DriverDTO driverDTO) {
+    public ResponseEntity<Driver> registerDriver(@Valid @RequestBody DriverDTO driverDTO) {
         Driver registeredDriver = driverService.registerDriver(driverDTO);
         return ResponseEntity.ok(registeredDriver);
     }
 
+    // VULN-6 FIX: added @Valid to enforce DriverDTO's validation constraints
     @PostMapping("/login")
-    public ResponseEntity<Driver> loginDriver(@RequestBody DriverDTO driverDTO) {
+    public ResponseEntity<Driver> loginDriver(@Valid @RequestBody DriverDTO driverDTO) {
         Driver driver = driverService.loginDriver(driverDTO);
         return ResponseEntity.ok(driver);
     }
