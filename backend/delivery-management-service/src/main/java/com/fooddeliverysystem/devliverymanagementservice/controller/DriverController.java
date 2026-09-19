@@ -12,8 +12,9 @@ import org.springframework.security.core.Authentication;
 @RestController
 @RequestMapping("/api/driver")
 @RequiredArgsConstructor
-// VULNERABLE (VULN-5): wildcard CORS allows requests from any origin, not just the trusted frontend
-@CrossOrigin(origins = "*") // Allow React frontend to hit the backend
+// VULN-5 FIX: CORS is no longer set per-controller with a wildcard; it's now centrally
+// configured in SecurityConfig.java with a restricted allowed origin.
+// @CrossOrigin(origins = "*") 
 public class DriverController {
 
     private final DriverService driverService;
