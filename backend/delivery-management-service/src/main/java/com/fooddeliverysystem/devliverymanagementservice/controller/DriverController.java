@@ -6,12 +6,15 @@ import com.fooddeliverysystem.devliverymanagementservice.service.DriverService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 
 @RestController
 @RequestMapping("/api/driver")
 @RequiredArgsConstructor
-// VULNERABLE (VULN-5): wildcard CORS allows requests from any origin, not just the trusted frontend
-@CrossOrigin(origins = "*") // Allow React frontend to hit the backend
+// VULN-5 FIX: CORS is no longer set per-controller with a wildcard; it's now centrally
+// configured in SecurityConfig.java with a restricted allowed origin.
+// @CrossOrigin(origins = "*") 
 public class DriverController {
 
     private final DriverService driverService;
@@ -35,13 +38,21 @@ public class DriverController {
         return ResponseEntity.ok(driver);
     }
 
-    /** Update driver profile **/
-    // VULNERABLE (VULN-5): IDOR — no check that the authenticated user owns this driver id, so any logged-in driver can update anyone else's profile
+        /** Update driver profile **/
+    // VULNERABLE (VULN-5): IDOR — no check that the token belongs to the driver being updated
     @PutMapping("/{id}")
     public ResponseEntity<Driver> updateDriver(
             @PathVariable Long id,
-            @RequestBody DriverDTO driverDTO
+            @RequestBody DriverDTO driverDTO,
+            Authentication authentication
     ) {
+        Driver existingDriver = driverService.getDriverById(id);
+        String authenticatedEmail = authentication.getName();
+
+        if (!existingDriver.getEmail().equals(authenticatedEmail)) {
+            throw new AccessDeniedException("You are not authorized to update this driver's profile");
+        }
+
         Driver updated = driverService.updateDriver(id, driverDTO);
         return ResponseEntity.ok(updated);
     }
