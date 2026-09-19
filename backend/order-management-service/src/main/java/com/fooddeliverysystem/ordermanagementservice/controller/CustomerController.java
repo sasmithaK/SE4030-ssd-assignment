@@ -3,6 +3,7 @@ package com.fooddeliverysystem.ordermanagementservice.controller;
 import com.fooddeliverysystem.ordermanagementservice.dto.CustomerDTO;
 import com.fooddeliverysystem.ordermanagementservice.service.CustomerService;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,12 +19,14 @@ public class CustomerController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public CustomerDTO registerCustomer(@RequestBody CustomerDTO customerDTO) {
+    // [FIX VULN-6] Added @Valid to enforce bean validation for incoming request
+    public CustomerDTO registerCustomer(@Valid @RequestBody CustomerDTO customerDTO) {
         return customerService.registerCustomer(customerDTO);
     }
 
     @PostMapping("/login")
-    public CustomerDTO login(@RequestBody CustomerDTO customerDTO) {
+    // [FIX VULN-6] Added @Valid to enforce bean validation for incoming request
+    public CustomerDTO login(@Valid @RequestBody CustomerDTO customerDTO) {
         return customerService.loginCustomer(customerDTO.getEmail(), customerDTO.getPassword());
     }
 
