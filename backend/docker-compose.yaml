@@ -11,6 +11,7 @@ services:
       - mysql_data:/var/lib/mysql
 
   mongodb:
+    # Vulnerability: No authentication configured
     image: mongo:4.4
     container_name: mongodb
     ports:
