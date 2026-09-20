@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    // Vulnerability: No structured security logging exists, and raw exception messages (which may contain sensitive data) are returned directly to the client.
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleAllExceptions(Exception ex, HttpServletRequest request) {
         ApiError error = ApiError.builder()
