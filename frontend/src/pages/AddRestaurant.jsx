@@ -59,7 +59,7 @@ const AddRestaurant = () => {
     setLoading(true);
     setError('');
     try {
-      await api.post('/restaurant-service/restaurants', formData);
+      await api.post('/restaurants', formData);
       navigate('/restaurants');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create restaurant. Please try again.');
