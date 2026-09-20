@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// [VULN-4] SECURITY ISSUE - No role check on admin endpoints, any CUSTOMER JWT can access
+// Missing @PreAuthorize("hasRole('ADMIN')") - must add role-based access control
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
@@ -35,14 +37,14 @@ public class AdminController {
 
     @PutMapping("/restaurants/{restaurantId}/verify")
     public RestaurantDTO verifyRestaurant(@PathVariable String restaurantId,
-                                        @RequestParam boolean verified) {
+            @RequestParam boolean verified) {
         return adminService.verifyRestaurant(restaurantId, verified);
     }
 
     @PostMapping("/financial-transactions")
     @ResponseStatus(HttpStatus.OK)
     public void processFinancialTransaction(@RequestParam String restaurantId,
-                                         @RequestParam double amount) {
+            @RequestParam double amount) {
         adminService.processFinancialTransaction(restaurantId, amount);
     }
 }
