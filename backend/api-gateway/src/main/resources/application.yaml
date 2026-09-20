@@ -8,13 +8,16 @@ spring:
   cloud:
     config:
       enabled: false
-
     gateway:
       routes:
         - id: order-service
           uri: http://order-management-service:8083   # ← order management
           predicates:
             - Path=/api/orders/**
+        - id: auth-service
+          uri: http://restaurant-management-service:8082
+          predicates:
+            - Path=/api/auth/**
         - id: restaurant-service
           uri: http://restaurant-management-service:8082 # ← restaurant management
           predicates:
@@ -31,3 +34,12 @@ spring:
           uri: http://delivery-management-service:8084     # ← drivers management
           predicates:
             - Path=/api/drivers/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info # Restrict actuator to safe endpoints only
+  endpoint:
+    health:
+      show-details: when_authorized

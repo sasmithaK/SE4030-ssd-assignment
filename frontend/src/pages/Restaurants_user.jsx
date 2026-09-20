@@ -40,7 +40,7 @@ const RestaurantsUser = () => {
   const fetchRestaurants = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/restaurant-service/restaurants');
+      const response = await api.get('/restaurants');
       setRestaurants(response.data.filter(r => r.available));
     } catch (err) {
       setError('Failed to load amazing restaurants near you.');

@@ -4,9 +4,13 @@ import com.fooddeliverysystem.devliverymanagementservice.dto.DriverDTO;
 import com.fooddeliverysystem.devliverymanagementservice.model.Driver;
 import com.fooddeliverysystem.devliverymanagementservice.repository.DriverRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+// VULN-9 FIX: added @Slf4j and security-relevant logging (registration, login
+// success/failure, profile updates) so these events are auditable
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DriverServiceImpl implements DriverService {
@@ -17,6 +21,7 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public Driver registerDriver(DriverDTO driverDTO) {
         if (driverRepository.findByEmail(driverDTO.getEmail()).isPresent()) {
+            log.warn("Registration failed: email already registered - {}", driverDTO.getEmail());
             throw new RuntimeException("Email already registered");
         }
 
@@ -28,18 +33,25 @@ public class DriverServiceImpl implements DriverService {
                 .password(passwordEncoder.encode(driverDTO.getPassword()))
                 .build();
 
-        return driverRepository.save(driver);
+        Driver saved = driverRepository.save(driver);
+        log.info("New driver registered: id={}, email={}", saved.getId(), saved.getEmail());
+        return saved;
     }
 
     @Override
     public Driver loginDriver(DriverDTO driverDTO) {
         Driver driver = driverRepository.findByEmail(driverDTO.getEmail())
-                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+                .orElseThrow(() -> {
+                    log.warn("Login failed: no account found for email={}", driverDTO.getEmail());
+                    return new RuntimeException("Invalid email or password");
+                });
 
         if (!passwordEncoder.matches(driverDTO.getPassword(), driver.getPassword())) {
+            log.warn("Login failed: incorrect password for email={}", driverDTO.getEmail());
             throw new RuntimeException("Invalid email or password");
         }
 
+        log.info("Driver logged in successfully: id={}, email={}", driver.getId(), driver.getEmail());
         return driver;
     }
 
@@ -52,14 +64,15 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public Driver updateDriver(Long id, DriverDTO dto) {
         Driver existing = getDriverById(id);
-        // update only mutable fields (email stays the same)
         existing.setFullName(dto.getFullName());
         existing.setPhone(dto.getPhone());
         existing.setVehicle(dto.getVehicle());
-        // if password provided, re-encode
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
             existing.setPassword(passwordEncoder.encode(dto.getPassword()));
+            log.info("Password changed for driver id={}, email={}", existing.getId(), existing.getEmail());
         }
-        return driverRepository.save(existing);
+        Driver saved = driverRepository.save(existing);
+        log.info("Driver profile updated: id={}, email={}", saved.getId(), saved.getEmail());
+        return saved;
     }
 }

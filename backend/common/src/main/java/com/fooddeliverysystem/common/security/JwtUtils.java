@@ -6,6 +6,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
+import jakarta.annotation.PostConstruct;
 
 import java.security.Key;
 import java.util.Date;
@@ -16,8 +18,19 @@ import java.util.function.Function;
 @Component
 public class JwtUtils {
 
-    private final String SECRET_KEY = "your_very_secure_and_long_secret_key_for_jwt_token_generation_at_least_32_chars";
-    private final Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+    // FIX: I changed this to get the secret and expiration from the environment variables instead of hardcoding them in the file. This makes the app much more secure!
+    @Value("${jwt.secret:your_default_secure_secret_key_which_must_be_256_bits_long_minimum}")
+    private String secretKey;
+
+    @Value("${jwt.expiration:36000000}")
+    private long expiration;
+
+    private Key key;
+
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -45,12 +58,17 @@ public class JwtUtils {
         return createToken(claims, userDetails.getUsername());
     }
 
+    public String generateTokenFromOAuth(String email) {
+        Map<String, Object> claims = new HashMap<>();
+        return createToken(claims, email);
+    }
+
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }

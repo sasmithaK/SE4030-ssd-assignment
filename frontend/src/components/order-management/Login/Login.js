@@ -48,7 +48,7 @@ const Login = () => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data));
 
-      navigate("/delivery-dashboard");
+      navigate("/restaurants_user");
     } catch (err) {
       setError(err.message || "Login failed. Please try again.");
       console.error("Login error:", err);
