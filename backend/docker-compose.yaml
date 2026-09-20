@@ -4,6 +4,8 @@ services:
     container_name: mysql
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER:-appuser}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-apppassword}
       - MYSQL_DATABASE=orderdb
     ports:
       - "3307:3306"
@@ -13,8 +15,9 @@ services:
   mongodb:
     image: mongo:4.4
     container_name: mongodb
-    ports:
-      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-adminpassword}
     volumes:
       - mongodb_data:/data/db
 
@@ -27,8 +30,8 @@ services:
       - "8084:8084"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/deliverydb?createDatabaseIfNotExist=true
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_USER:-appuser}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD:-apppassword}
     depends_on:
       - mysql
 
@@ -41,8 +44,8 @@ services:
       - "8083:8083"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/orderdb?createDatabaseIfNotExist=true
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_USER:-appuser}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD:-apppassword}
     depends_on:
       - mysql
 
@@ -64,7 +67,7 @@ services:
     image: api-gateway:latest
     container_name: api-gateway
     ports:
-      - "8080:8080"
+      - "8085:8080"
     depends_on:
       - delivery-management-service
       - order-management-service

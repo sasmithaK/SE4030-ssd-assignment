@@ -9,6 +9,15 @@ spring:
     config:
       enabled: false
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:placeholder-id}
+            client-secret: ${GOOGLE_CLIENT_SECRET:placeholder-secret}
+            scope: openid,profile,email
+
     gateway:
       routes:
         - id: order-service
@@ -31,3 +40,12 @@ spring:
           uri: http://delivery-management-service:8084     # ← drivers management
           predicates:
             - Path=/api/drivers/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info # Restrict actuator to safe endpoints only
+  endpoint:
+    health:
+      show-details: when_authorized
