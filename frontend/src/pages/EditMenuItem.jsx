@@ -49,7 +49,7 @@ const EditMenuItem = () => {
   useEffect(() => {
     const fetchItem = async () => {
       try {
-        const response = await api.get(`/restaurant-service/restaurants/${id}/menu`);
+        const response = await api.get(`/restaurants/${id}/menu`);
         const item = response.data.find(i => (i._id || i.id) === menuId);
         if (item) {
           setFormData({
@@ -80,7 +80,7 @@ const EditMenuItem = () => {
     setSubmitting(true);
     setError('');
     try {
-      await api.put(`/restaurant-service/restaurants/${id}/menu/${menuId}`, {
+      await api.put(`/restaurants/${id}/menu/${menuId}`, {
         ...formData,
         price: parseFloat(formData.price)
       });

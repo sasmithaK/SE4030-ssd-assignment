@@ -60,7 +60,7 @@ const AddMenuPage = () => {
     setLoading(true);
     setError('');
     try {
-      await api.post(`/restaurant-service/restaurants/${id}/menu`, {
+      await api.post(`/restaurants/${id}/menu`, {
         ...formData,
         price: parseFloat(formData.price)
       });

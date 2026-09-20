@@ -243,6 +243,7 @@ function SignupPage() {
                                     >
                                         <option value="CUSTOMER">Regular User</option>
                                         <option value="RESTAURANT_ADMIN">Restaurant Admin</option>
+                                        <option value="DELIVERY_PERSON">Delivery Hero</option>
                                     </select>
                                 </div>
                             </div>

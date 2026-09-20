@@ -40,10 +40,10 @@ const MenuPage = () => {
   const fetchMenuAndRestaurant = async () => {
     try {
       setLoading(true);
-      const restaurantRes = await api.get(`/restaurant-service/restaurants/${id}`);
+      const restaurantRes = await api.get(`/restaurants/${id}`);
       setRestaurant(restaurantRes.data);
 
-      const menuRes = await api.get(`/restaurant-service/restaurants/${id}/menu`);
+      const menuRes = await api.get(`/restaurants/${id}/menu`);
       setMenuItems(menuRes.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch menu data');
@@ -59,7 +59,7 @@ const MenuPage = () => {
   const handleDelete = async (menuId) => {
     if (!window.confirm('Are you sure you want to delete this menu item?')) return;
     try {
-      await api.delete(`/restaurant-service/restaurants/${id}/menu/${menuId}`);
+      await api.delete(`/restaurants/${id}/menu/${menuId}`);
       fetchMenuAndRestaurant();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to delete menu item');

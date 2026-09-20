@@ -45,7 +45,7 @@ const EditRestaurant = () => {
   useEffect(() => {
     const fetchRestaurant = async () => {
       try {
-        const response = await api.get(`/restaurant-service/restaurants/${id}`);
+        const response = await api.get(`/restaurants/${id}`);
         const { name, address, available } = response.data;
         setFormData({ name, address, available });
       } catch (err) {
@@ -71,7 +71,7 @@ const EditRestaurant = () => {
     setSubmitting(true);
     setError('');
     try {
-      await api.put(`/restaurant-service/restaurants/${id}`, formData);
+      await api.put(`/restaurants/${id}`, formData);
       navigate('/restaurants');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to update restaurant.');

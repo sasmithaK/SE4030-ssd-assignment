@@ -1,0 +1,3 @@
+CREATE DATABASE IF NOT EXISTS `deliverydb`;
+GRANT ALL PRIVILEGES ON `deliverydb`.* TO 'appuser'@'%';
+FLUSH PRIVILEGES;

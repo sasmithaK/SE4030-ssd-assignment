@@ -68,6 +68,7 @@ function LoginPage() {
     const normalizedRole = role?.toUpperCase();
     if (normalizedRole === "CUSTOMER") navigate("/restaurants_user", { replace: true });
     else if (normalizedRole === "RESTAURANT_ADMIN") navigate("/restaurants", { replace: true });
+    else if (normalizedRole === "DELIVERY_PERSON") navigate("/delivery-dashboard", { replace: true });
     else navigate("/", { replace: true });
   };
 
@@ -77,7 +78,7 @@ function LoginPage() {
     setError("");
 
     try {
-      const response = await api.post("/restaurant-service/auth/login", { email, password });
+      const response = await api.post("/auth/login", { email, password });
 
       if (response.status === 200) {
         const user = response.data;

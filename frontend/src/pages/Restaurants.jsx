@@ -38,7 +38,7 @@ const Restaurants = () => {
   const fetchRestaurants = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/restaurant-service/restaurants');
+      const response = await api.get('/restaurants');
       setRestaurants(response.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch restaurants');
@@ -53,7 +53,7 @@ const Restaurants = () => {
 
   const toggleAvailability = async (id, currentStatus) => {
     try {
-      await api.put(`/restaurant-service/restaurants/${id}/status`, { available: !currentStatus });
+      await api.put(`/restaurants/${id}/status`, { available: !currentStatus });
       fetchRestaurants();
     } catch (err) {
       setError('Failed to update status');
@@ -63,7 +63,7 @@ const Restaurants = () => {
   const deleteRestaurant = async (id) => {
     if (!window.confirm('Are you sure you want to delete this restaurant?')) return;
     try {
-      await api.delete(`/restaurant-service/restaurants/${id}`);
+      await api.delete(`/restaurants/${id}`);
       fetchRestaurants();
     } catch (err) {
       setError('Failed to delete restaurant');

@@ -44,8 +44,8 @@ const MenuPageUser = () => {
       try {
         setLoading(true);
         const [resInfo, resMenu] = await Promise.all([
-          api.get(`/restaurant-service/restaurants/${id}`),
-          api.get(`/restaurant-service/restaurants/${id}/menu`)
+          api.get(`/restaurants/${id}`),
+          api.get(`/restaurants/${id}/menu`)
         ]);
         setRestaurant(resInfo.data);
         setMenuItems(resMenu.data);
