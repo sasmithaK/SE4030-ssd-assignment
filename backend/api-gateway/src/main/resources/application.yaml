@@ -8,22 +8,16 @@ spring:
   cloud:
     config:
       enabled: false
-
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: ${GOOGLE_CLIENT_ID:placeholder-id}
-            client-secret: ${GOOGLE_CLIENT_SECRET:placeholder-secret}
-            scope: openid,profile,email
-
     gateway:
       routes:
         - id: order-service
           uri: http://order-management-service:8083   # ← order management
           predicates:
             - Path=/api/orders/**
+        - id: auth-service
+          uri: http://restaurant-management-service:8082
+          predicates:
+            - Path=/api/auth/**
         - id: restaurant-service
           uri: http://restaurant-management-service:8082 # ← restaurant management
           predicates:
