@@ -67,7 +67,7 @@ services:
     image: api-gateway:latest
     container_name: api-gateway
     ports:
-      - "8080:8080"
+      - "8085:8080"
     depends_on:
       - delivery-management-service
       - order-management-service
