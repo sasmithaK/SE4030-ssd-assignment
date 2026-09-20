@@ -30,9 +30,9 @@ public class AuthController {
 
             // Convert role to uppercase for case-insensitive matching
             String roleUpper = userDTO.getRole().toUpperCase();
-            if (!roleUpper.equals("RESTAURANT_ADMIN") && !roleUpper.equals("CUSTOMER")) {
+            if (!roleUpper.equals("RESTAURANT_ADMIN") && !roleUpper.equals("CUSTOMER") && !roleUpper.equals("DELIVERY_PERSON")) {
                 return ResponseEntity.badRequest()
-                        .body("Invalid role. Allowed values: RESTAURANT_ADMIN, CUSTOMER");
+                        .body("Invalid role. Allowed values: RESTAURANT_ADMIN, CUSTOMER, DELIVERY_PERSON");
             }
 
             return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(userDTO));
