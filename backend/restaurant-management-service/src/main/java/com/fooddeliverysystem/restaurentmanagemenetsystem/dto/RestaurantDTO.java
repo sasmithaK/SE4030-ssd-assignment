@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+// [VULN-6] SECURITY ISSUE - No input validation on DTO fields
+// Missing @NotBlank/@Email/@Size constraints - null/invalid data is accepted
 public class RestaurantDTO {
     private String id;
     private String name;
