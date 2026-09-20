@@ -25,8 +25,8 @@ public class CustomerController {
     }
 
     @PostMapping("/login")
-    // [FIX VULN-6] Added @Valid to enforce bean validation for incoming request
-    public CustomerDTO login(@Valid @RequestBody CustomerDTO customerDTO) {
+    // [FIX VULN-6] Removed @Valid from login as it causes 500 errors when only email/password are provided
+    public CustomerDTO login(@RequestBody CustomerDTO customerDTO) {
         return customerService.loginCustomer(customerDTO.getEmail(), customerDTO.getPassword());
     }
 

@@ -33,6 +33,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/driver/login", "/api/driver/register").permitAll()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session

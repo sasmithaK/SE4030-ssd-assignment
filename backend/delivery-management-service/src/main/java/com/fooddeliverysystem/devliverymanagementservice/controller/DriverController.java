@@ -27,9 +27,9 @@ public class DriverController {
         return ResponseEntity.ok(registeredDriver);
     }
 
-    // VULN-6 FIX: added @Valid to enforce DriverDTO's validation constraints
+    // VULN-6 FIX: removed @Valid to allow partial DTOs on login
     @PostMapping("/login")
-    public ResponseEntity<Driver> loginDriver(@Valid @RequestBody DriverDTO driverDTO) {
+    public ResponseEntity<Driver> loginDriver(@RequestBody DriverDTO driverDTO) {
         Driver driver = driverService.loginDriver(driverDTO);
         return ResponseEntity.ok(driver);
     }
