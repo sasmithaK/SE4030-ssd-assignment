@@ -16,6 +16,7 @@ import java.util.function.Function;
 @Component
 public class JwtUtils {
 
+    // Vulnerability: The JWT secret key is hardcoded. Anyone who sees this code can generate valid tokens!
     private final String SECRET_KEY = "your_very_secure_and_long_secret_key_for_jwt_token_generation_at_least_32_chars";
     private final Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 
