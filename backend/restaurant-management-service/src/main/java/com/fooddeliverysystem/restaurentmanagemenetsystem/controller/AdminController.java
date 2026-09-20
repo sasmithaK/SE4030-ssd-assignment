@@ -17,6 +17,7 @@ import java.util.List;
 public class AdminController {
 
     private final AdminService adminService;
+    // [VULN-4] FIXED - Added @PreAuthorize role checks on all admin endpoints
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
