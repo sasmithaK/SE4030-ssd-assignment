@@ -40,3 +40,12 @@ spring:
           uri: http://delivery-management-service:8084     # ← drivers management
           predicates:
             - Path=/api/drivers/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info # Restrict actuator to safe endpoints only
+  endpoint:
+    health:
+      show-details: when_authorized
