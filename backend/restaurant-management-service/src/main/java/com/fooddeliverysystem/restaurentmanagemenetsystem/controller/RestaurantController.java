@@ -6,6 +6,7 @@ import com.fooddeliverysystem.restaurentmanagemenetsystem.service.RestaurantServ
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class RestaurantController {
     // Restaurant Endpoints
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RestaurantDTO createRestaurant(@RequestBody RestaurantDTO restaurantDTO) {
+    public RestaurantDTO createRestaurant(@Valid @RequestBody RestaurantDTO restaurantDTO) {
         return restaurantService.createRestaurant(restaurantDTO);
     }
 
