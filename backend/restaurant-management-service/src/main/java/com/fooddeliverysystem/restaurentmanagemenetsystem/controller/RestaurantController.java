@@ -6,6 +6,7 @@ import com.fooddeliverysystem.restaurentmanagemenetsystem.service.RestaurantServ
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class RestaurantController {
     // Restaurant Endpoints
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RestaurantDTO createRestaurant(@RequestBody RestaurantDTO restaurantDTO) {
+    public RestaurantDTO createRestaurant(@Valid @RequestBody RestaurantDTO restaurantDTO) {
         return restaurantService.createRestaurant(restaurantDTO);
     }
 
@@ -35,13 +36,13 @@ public class RestaurantController {
 
     @PutMapping("/{restaurantId}")
     public RestaurantDTO updateRestaurant(@PathVariable String restaurantId,
-                                        @RequestBody RestaurantDTO restaurantDTO) {
+            @RequestBody RestaurantDTO restaurantDTO) {
         return restaurantService.updateRestaurant(restaurantId, restaurantDTO);
     }
 
     @PutMapping("/{restaurantId}/status")
     public RestaurantDTO setRestaurantStatus(@PathVariable String restaurantId,
-                                           @RequestParam boolean available) {
+            @RequestParam boolean available) {
         return restaurantService.updateAvailability(restaurantId, available);
     }
 
@@ -57,24 +58,26 @@ public class RestaurantController {
         return restaurantService.getMenuItems(restaurantId);
     }
 
+    // [VULN-6] SECURITY ISSUE - No @Valid annotation, invalid data reaches the
+    // service layer
     @PostMapping("/{restaurantId}/menu")
     @ResponseStatus(HttpStatus.CREATED)
     public MenuItemDTO addMenuItem(@PathVariable String restaurantId,
-                                 @RequestBody MenuItemDTO menuItemDTO) {
+            @RequestBody MenuItemDTO menuItemDTO) {
         return restaurantService.addMenuItem(restaurantId, menuItemDTO);
     }
 
     @PutMapping("/{restaurantId}/menu/{menuItemId}")
     public MenuItemDTO updateMenuItem(@PathVariable String restaurantId,
-                                    @PathVariable String menuItemId,
-                                    @RequestBody MenuItemDTO menuItemDTO) {
+            @PathVariable String menuItemId,
+            @RequestBody MenuItemDTO menuItemDTO) {
         return restaurantService.updateMenuItem(restaurantId, menuItemId, menuItemDTO);
     }
 
     @DeleteMapping("/{restaurantId}/menu/{menuItemId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMenuItem(@PathVariable String restaurantId,
-                             @PathVariable String menuItemId) {
+            @PathVariable String menuItemId) {
         restaurantService.deleteMenuItem(restaurantId, menuItemId);
     }
 }
