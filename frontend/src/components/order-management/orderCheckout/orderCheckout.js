@@ -18,16 +18,18 @@ const OrderCheckout = () => {
       try {
         // [FIX VULN-7] Retrieve current user from localStorage instead of hardcoding ID 17
         const currentUserData = localStorage.getItem('currentUser');
-        const customerId = currentUserData ? JSON.parse(currentUserData).id : null;
+        const rawCustomerId = currentUserData ? JSON.parse(currentUserData).id : null;
 
-        // [FIX] Validate that customerId is a valid number to prevent injection
-        if (!customerId || isNaN(customerId)) {
+        // Convert to a strict integer to completely eliminate CSRF/SSRF risks
+        const customerId = parseInt(rawCustomerId, 10);
+
+        // [FIX] Use Number.isNaN as recommended by SonarCloud
+        if (!customerId || Number.isNaN(customerId)) {
           throw new Error('User not logged in or invalid ID');
         }
 
-        // [FIX] Sanitize the input using encodeURIComponent to prevent Client-Side Request Forgery
-        const safeCustomerId = encodeURIComponent(customerId);
-        const response = await axios.get(`http://localhost:8083/api/orders/customer/${safeCustomerId}`);
+        // Since customerId is strictly a number now, it is 100% safe to interpolate
+        const response = await axios.get(`http://localhost:8083/api/orders/customer/${customerId}`);
         setOrders(response.data);
         setLoading(false);
       } catch (err) {
