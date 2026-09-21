@@ -20,11 +20,14 @@ const OrderCheckout = () => {
         const currentUserData = localStorage.getItem('currentUser');
         const customerId = currentUserData ? JSON.parse(currentUserData).id : null;
 
-        if (!customerId) {
-          throw new Error('User not logged in');
+        // [FIX] Validate that customerId is a valid number to prevent injection
+        if (!customerId || isNaN(customerId)) {
+          throw new Error('User not logged in or invalid ID');
         }
 
-        const response = await axios.get(`http://localhost:8083/api/orders/customer/${customerId}`);
+        // [FIX] Sanitize the input using encodeURIComponent to prevent Client-Side Request Forgery
+        const safeCustomerId = encodeURIComponent(customerId);
+        const response = await axios.get(`http://localhost:8083/api/orders/customer/${safeCustomerId}`);
         setOrders(response.data);
         setLoading(false);
       } catch (err) {
