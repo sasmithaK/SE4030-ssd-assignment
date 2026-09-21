@@ -20,6 +20,8 @@ public class DriverController {
 
     private final DriverService driverService;
 
+    /* VULNERABLE (BONUS): returns the raw Driver entity, including the bcrypt password
+      hash, in the response body for both register and login*/
     // VULN-6 FIX: added @Valid to enforce DriverDTO's validation constraints
     @PostMapping("/register")
     public ResponseEntity<Driver> registerDriver(@Valid @RequestBody DriverDTO driverDTO) {
@@ -27,6 +29,8 @@ public class DriverController {
         return ResponseEntity.ok(registeredDriver);
     }
 
+    /* VULNERABLE (BONUS): returns the raw Driver entity, including the bcrypt password
+      hash, in the response body for both register and login*/
     // VULN-6 FIX: removed @Valid to allow partial DTOs on login
     @PostMapping("/login")
     public ResponseEntity<Driver> loginDriver(@RequestBody DriverDTO driverDTO) {
