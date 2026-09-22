@@ -14,11 +14,14 @@ const theme = createTheme({
 const parseJwt = (token) => {
   try {
     const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const base64 = base64Url.replaceAll('-', '+').replaceAll('_', '/');
     const payload = decodeURIComponent(
       atob(base64)
         .split('')
-        .map((character) => `%${(`00${character.charCodeAt(0).toString(16)}`).slice(-2)}`)
+        .map((character) => {
+          const hex = (character.codePointAt(0) ?? 0).toString(16).padStart(2, '0');
+          return `%${hex}`;
+        })
         .join('')
     );
 
