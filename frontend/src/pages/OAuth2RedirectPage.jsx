@@ -1,0 +1,89 @@
+import React, { useEffect, useState } from "react";
+import { Alert, Box, CircularProgress, Container, CssBaseline, ThemeProvider, Typography, createTheme } from "@mui/material";
+import { useNavigate, useSearchParams } from "react-router-dom";
+
+const theme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: { main: '#FF4D4D' },
+    background: { default: '#0A0A0A', paper: '#1A1A1A' },
+  },
+  typography: { fontFamily: '"Outfit", "Inter", sans-serif' },
+});
+
+const parseJwt = (token) => {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replaceAll('-', '+').replaceAll('_', '/');
+    const payload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((character) => {
+          const hex = (character.codePointAt(0) ?? 0).toString(16).padStart(2, '0');
+          return `%${hex}`;
+        })
+        .join('')
+    );
+
+    return JSON.parse(payload);
+  } catch {
+    return {};
+  }
+};
+
+function OAuth2RedirectPage() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const token = searchParams.get("token");
+
+    if (!token) {
+      setError("Google sign-in did not return a token. Please try again.");
+      return;
+    }
+
+    const claims = parseJwt(token);
+    const email = claims.sub || claims.email || "";
+
+    localStorage.setItem(
+      "currentUser",
+      JSON.stringify({
+        email,
+        username: email,
+        role: "CUSTOMER",
+        token,
+      })
+    );
+
+    navigate("/restaurants", { replace: true });
+  }, [navigate, searchParams]);
+
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'radial-gradient(circle at 20% 20%, #1a0a0a 0%, #0a0a0a 100%)' }}>
+        <Container maxWidth="sm">
+          <Box sx={{ p: 5, borderRadius: 6, border: '1px solid rgba(255,255,255,0.05)', backgroundColor: 'rgba(26,26,26,0.92)', textAlign: 'center' }}>
+            {error ? (
+              <Alert severity="error" sx={{ borderRadius: 2, mb: 2 }}>
+                {error}
+              </Alert>
+            ) : (
+              <CircularProgress color="primary" sx={{ mb: 3 }} />
+            )}
+            <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
+              Completing Google sign-in
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Please wait while we finish logging you in.
+            </Typography>
+          </Box>
+        </Container>
+      </Box>
+    </ThemeProvider>
+  );
+}
+
+export default OAuth2RedirectPage;
