@@ -19,7 +19,7 @@ import {
   Alert,
   Snackbar
 } from '@mui/material';
-import { Eye, EyeOff, Lock, Mail, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 
@@ -70,6 +70,11 @@ function LoginPage() {
     else if (normalizedRole === "RESTAURANT_ADMIN") navigate("/restaurants", { replace: true });
     else if (normalizedRole === "DELIVERY_PERSON") navigate("/delivery-dashboard", { replace: true });
     else navigate("/", { replace: true });
+  };
+
+  const handleGoogleSignIn = () => {
+    const backendBaseUrl = process.env.REACT_APP_RESTAURANT_AUTH_URL || "http://localhost:8082";
+    window.location.href = `${backendBaseUrl}/oauth2/authorization/google`;
   };
 
   const handleLogin = async (e) => {
@@ -209,6 +214,52 @@ function LoginPage() {
                   }}
                 >
                   {loading ? <CircularProgress size={24} color="inherit" /> : (success ? "Success!" : "Sign In")}
+                </Button>
+
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, my: 3 }}>
+                  <Box sx={{ flex: 1, height: 1, bgcolor: 'rgba(255,255,255,0.12)' }} />
+                  <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'nowrap' }}>
+                    or continue with
+                  </Typography>
+                  <Box sx={{ flex: 1, height: 1, bgcolor: 'rgba(255,255,255,0.12)' }} />
+                </Box>
+
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  size="large"
+                  type="button"
+                  onClick={handleGoogleSignIn}
+                  sx={{
+                    py: 2,
+                    fontSize: '1rem',
+                    borderColor: 'rgba(255,255,255,0.18)',
+                    color: '#fff',
+                    backgroundColor: 'rgba(255,255,255,0.03)',
+                    '&:hover': {
+                      borderColor: 'rgba(255,255,255,0.35)',
+                      backgroundColor: 'rgba(255,255,255,0.06)'
+                    }
+                  }}
+                  startIcon={
+                    <Box sx={{
+                      width: 22,
+                      height: 22,
+                      borderRadius: '50%',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: 'linear-gradient(135deg, #4285F4 0%, #EA4335 33%, #FBBC05 66%, #34A853 100%)',
+                      color: '#fff',
+                      fontWeight: 700,
+                      fontSize: 12,
+                      lineHeight: 1
+                    }}>
+                      G
+                    </Box>
+                  }
+                >
+                  Continue with Google
                 </Button>
               </form>
 
