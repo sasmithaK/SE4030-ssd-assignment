@@ -4,6 +4,7 @@ import com.fooddeliverysystem.common.security.JwtUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -31,8 +32,16 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         // Generate our system JWT token using the helper method we created
         String token = jwtUtils.generateTokenFromOAuth(email);
         
-        // Redirect the user back to the React frontend with the token
-        String targetUrl = frontendOAuthRedirectUrl + "?token=" + token;
+        // Establish authentication with a secure HttpOnly cookie instead of exposing the token in the URL
+        Cookie cookie = new Cookie("jwt", token);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(24 * 60 * 60);
+        response.addCookie(cookie);
+        
+        // Redirect the user back to the React frontend without the token in the URL
+        String targetUrl = frontendOAuthRedirectUrl;
         
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }

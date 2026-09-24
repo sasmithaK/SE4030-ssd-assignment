@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Alert, Box, CircularProgress, Container, CssBaseline, ThemeProvider, Typography, createTheme } from "@mui/material";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const theme = createTheme({
   palette: {
@@ -32,33 +32,24 @@ const parseJwt = (token) => {
 };
 
 function OAuth2RedirectPage() {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const token = searchParams.get("token");
-
-    if (!token) {
-      setError("Google sign-in did not return a token. Please try again.");
-      return;
-    }
-
-    const claims = parseJwt(token);
-    const email = claims.sub || claims.email || "";
-
+    // The backend now securely sets an HttpOnly cookie for the JWT.
+    // There is no longer a token appended to the URL to parse.
+    
     localStorage.setItem(
       "currentUser",
       JSON.stringify({
-        email,
-        username: email,
+        username: "Google User", // Provide a fallback name since we can't parse the JWT locally
         role: "CUSTOMER",
-        token,
       })
     );
 
+    // Redirect to restaurants page, where authenticated requests will now use the HttpOnly cookie
     navigate("/restaurants", { replace: true });
-  }, [navigate, searchParams]);
+  }, [navigate]);
 
   return (
     <ThemeProvider theme={theme}>
