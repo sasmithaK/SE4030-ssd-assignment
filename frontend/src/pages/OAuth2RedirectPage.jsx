@@ -33,7 +33,7 @@ const parseJwt = (token) => {
 
 function OAuth2RedirectPage() {
   const navigate = useNavigate();
-  const [error, setError] = useState("");
+  const [error] = useState("");
 
   useEffect(() => {
     // The backend now securely sets an HttpOnly cookie for the JWT.
