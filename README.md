@@ -57,3 +57,15 @@ The objective of this assignment is to identify and remediate security vulnerabi
 4. Implemented a mandatory **OAuth2 / OpenID Connect** feature by securing the Restaurant Admin login portal via Google OAuth2 with secure HttpOnly cookies.
 
 
+## Tools Used for Security Auditing
+We utilized a combination of dynamic analysis (DAST), static analysis (SAST), and AI-driven code reviews to thoroughly audit the application:
+* **OWASP ZAP:** Used for dynamic application security testing (DAST), intercepting API requests, and fuzzing payloads to uncover broken access control and injection flaws.
+* **GitHub Code Scanning (CodeQL):** Leveraged for static application security testing (SAST) to detect issues like Browser Storage Poisoning and configuration weaknesses.
+* **SonarQube Cloud:** Used for continuous inspection of code quality, detecting hardcoded secrets, and flagging insecure security configurations (e.g., disabled CSRF).
+* **CodeRabbit AI:** Utilized for AI-powered pull request reviews to catch logic flaws, review security patches, and ensure secure coding best practices during merges.
+* **TruffleHog:** Scanned the Git commit history to unearth hidden secrets and leaked database credentials.
+
+---
+
+
+
