@@ -21,7 +21,7 @@ const OrderCheckout = () => {
         const rawCustomerId = currentUserData ? JSON.parse(currentUserData).id : null;
 
         // Convert to a strict integer to completely eliminate CSRF/SSRF risks
-        const customerId = parseInt(rawCustomerId, 10);
+        const customerId = Number.parseInt(rawCustomerId, 10);
 
         // [FIX] Use Number.isNaN as recommended by SonarCloud
         if (!customerId || Number.isNaN(customerId)) {
