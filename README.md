@@ -69,3 +69,52 @@ We utilized a combination of dynamic analysis (DAST), static analysis (SAST), an
 
 
 
+## Part 1: Vulnerability Findings and Fixes
+
+### V1: Hardcoded JWT Secret Key (A02: Cryptographic Failures)
+* **Identification Tool:** SonarQube (SAST) / Manual Git Log
+* **Vulnerability:** The JWT signing key was hardcoded in plain text in JwtUtils.java, allowing anyone to forge valid admin tokens.
+* **Fix:** Removed the hardcoded string and injected the secret via environment variables (`@Value("${jwt.secret}")`).
+
+### V2: Exposed MongoDB Credentials (A02: Cryptographic Failures)
+* **Identification Tool:** TruffleHog (Secret Scanner)
+* **Vulnerability:** Live MongoDB Atlas connection string (with username and password) was hardcoded in application.properties.
+* **Fix:** Replaced the hardcoded URI with the `SPRING_DATA_MONGODB_URI` environment variable.
+
+### V3: Plaintext Passwords in Database (A02: Cryptographic Failures)
+* **Identification Tool:** Manual Database Inspection (MySQL Query)
+* **Vulnerability:** Customer passwords were being stored in the database without any encryption or hashing.
+* **Fix:** Implemented `BCryptPasswordEncoder` to hash passwords before saving them, and used `.matches()` for secure login verification.
+
+### V4: Broken Access Control (A01: Broken Access Control)
+* **Identification Tool:** OWASP ZAP (DAST) - Active Scan / Spider
+* **Vulnerability:** Admin endpoints in the Restaurant Service lacked role-based access checks, allowing any regular customer to access admin APIs.
+* **Fix:** Enabled `@EnableMethodSecurity` and added `@PreAuthorize("hasRole('RESTAURANT_ADMIN')")` to all admin endpoints.
+
+### V5: CORS Wildcard and IDOR (A01: Broken Access Control / A05: Security Misconfiguration)
+* **Identification Tool:** Browser DevTools / OWASP ZAP
+* **Vulnerability:** The Delivery Service had a wildcard CORS and lacked ownership checks, allowing any user to update another driver's profile.
+* **Fix:** Removed the wildcard CORS and added explicit validation using `SecurityContextHolder` to ensure the logged-in email matches the profile being edited.
+
+### V6: Missing Input Validation (A03: Injection)
+* **Identification Tool:** OWASP ZAP (Fuzzing / Active Scan)
+* **Vulnerability:** DTOs lacked bean validation, allowing empty or malformed data to reach the database and potentially cause NoSQL/SQL injection.
+* **Fix:** Added `@Valid`, `@NotBlank`, and `@Size` annotations to all DTOs and Controller endpoints across all services.
+
+### V7: Sensitive Data in API Responses and LocalStorage (A02 / A07)
+* **Identification Tool:** OWASP ZAP / CodeQL (Browser Storage Poisoning)
+* **Vulnerability:** The API returned raw passwords in JSON responses, and frontend clients stored sensitive JWTs and user data in localStorage (vulnerable to XSS).
+* **Fix:** Excluded passwords from DTO responses. Relocated JWT storage from localStorage to secure, `HttpOnly` cookies.
+
+### V8: Unauthenticated MongoDB Exposed on Public Port (A05: Security Misconfiguration)
+* **Identification Tool:** mongosh / Nmap
+* **Vulnerability:** The MongoDB container in docker-compose.yaml had no root username/password set and exposed port 27017 directly to the host.
+* **Fix:** Added `MONGO_INITDB_ROOT_USERNAME` and `PASSWORD` environment variables to enforce database authentication.
+
+### V9: Insufficient Security Logging (A09: Security Logging Failures)
+* **Identification Tool:** Manual Code Review / SonarQube
+* **Vulnerability:** Missing structured logging for security events (login failures, etc.), and sensitive financial transactions were printed using `System.out.println()`.
+* **Fix:** Replaced standard output with `@Slf4j` secure logging (`log.info()`, `log.warn()`) across all relevant service controllers and global exception handlers.
+
+---
+
