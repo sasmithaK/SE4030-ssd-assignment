@@ -118,3 +118,66 @@ We utilized a combination of dynamic analysis (DAST), static analysis (SAST), an
 
 ---
 
+## Part 2: OAuth2 / OIDC Implementation
+To secure the Restaurant Admin login portal, we implemented a robust **Google OAuth2** flow (Authorization Code + PKCE).
+
+* **Backend Integration:** Configured `SecurityConfig.java` to support `.oauth2Login()`.
+* **Secure Token Handling:** Instead of exposing the resulting JWT in the URL or storing it in the frontend's localStorage, the `OAuth2LoginSuccessHandler` securely drops the JWT into an `HttpOnly` cookie.
+* **Frontend:** Updated Axios interceptors with `withCredentials: true` to seamlessly pass the secure cookie back to the microservices.
+
+
+---
+
+## How to Run the Project
+
+### 1. Prerequisites
+* **Docker & Docker Compose** (for running the backend services and databases)
+* **Node.js (v16+) & npm** (for running the React frontend)
+* **Java 17+** (if compiling backend manually, though Docker handles it)
+
+### 2. Backend Setup
+1. Navigate to the `backend` directory.
+2. Copy the `.env.example` file to a new file named `.env` and fill in your actual **Google OAuth2 Credentials** (`GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`) and your **MongoDB Atlas URI** (`MONGODB_URI`).
+3. Start the backend services using Docker Compose:
+   ```bash
+   docker-compose up --build -d
+   ```
+   *(This will spin up the MySQL database, MongoDB, API Gateway, and the Restaurant, Order, and Delivery microservices).*
+
+### 3. Frontend Setup
+1. Navigate to the `frontend` directory.
+2. Install the Node dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the React development server:
+   ```bash
+   npm start
+   ```
+4. Access the web application at `http://localhost:3000`.
+
+---
+
+## API Endpoints Overview
+
+The backend is composed of multiple microservices. Requests can be routed through the API Gateway or accessed directly via their respective ports during development.
+
+### Restaurant & Admin Service (Port 8082)
+* **`POST /api/auth/signup`** - Register a new user (Customer, Delivery Person, or Admin)
+* **`POST /api/auth/login`** - Traditional JWT login
+* **`GET /login/oauth2/code/google`** - OAuth2 Google Login Callback (Sets secure HttpOnly Cookie)
+* **`GET /api/restaurants`** - Fetch all restaurants
+* **`POST /api/restaurants/{id}/menu`** - Add a menu item (Secured)
+* **`GET /api/admin/users`** - List all users (Requires `RESTAURANT_ADMIN` role)
+
+### Order Service (Port 8083)
+* **`POST /api/customers/register`** - Register a customer account
+* **`POST /api/customers/login`** - Customer login
+* **`POST /api/orders`** - Create a new food order
+* **`GET /api/orders/customer/{id}`** - Fetch order history (Secured via ownership check)
+
+### Delivery Service (Port 8084)
+* **`POST /api/driver/register`** - Register a delivery driver
+* **`POST /api/driver/login`** - Driver login
+* **`GET /api/driver/{id}`** - Fetch driver profile
+* **`PUT /api/driver/{id}`** - Update driver profile (Secured via ownership check)
