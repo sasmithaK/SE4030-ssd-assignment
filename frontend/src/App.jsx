@@ -29,6 +29,7 @@ import AddMenuPage from "./pages/AddMenuPage.jsx";
 import EditMenuItem from './pages/EditMenuItem.jsx';
 import Restaurants_user from './pages/Restaurants_user.jsx'
 import MenuPage_user from './pages/MenuPage_user.jsx'
+import OAuth2RedirectPage from './pages/OAuth2RedirectPage.jsx'
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
 
         {/* Restaurant  Service Routes */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/oauth2/redirect" element={<OAuth2RedirectPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/menu/:id" element={<MenuPage />} />
         <Route path="/menu_user/:id" element={<MenuPage_user />} />
