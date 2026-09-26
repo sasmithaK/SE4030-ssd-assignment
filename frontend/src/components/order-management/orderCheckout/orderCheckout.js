@@ -29,7 +29,10 @@ const OrderCheckout = () => {
         }
 
         // Since customerId is strictly a number now, it is 100% safe to interpolate
-        const response = await axios.get(`http://localhost:8083/api/orders/customer/${customerId}`);
+        // [FIX VULN-7] Added withCredentials: true to send the HttpOnly cookie automatically
+        const response = await axios.get(`http://localhost:8083/api/orders/customer/${customerId}`, {
+          withCredentials: true
+        });
         setOrders(response.data);
         setLoading(false);
       } catch (err) {
