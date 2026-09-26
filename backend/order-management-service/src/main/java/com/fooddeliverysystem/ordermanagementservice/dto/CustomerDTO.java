@@ -34,4 +34,6 @@ public class CustomerDTO {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String confirmPassword;
+
+    private String token; // Token field to pass JWT to frontend
 }
