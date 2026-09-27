@@ -3,6 +3,7 @@ package com.fooddeliverysystem.ordermanagementservice.service;
 import com.fooddeliverysystem.ordermanagementservice.dto.CustomerDTO;
 import com.fooddeliverysystem.ordermanagementservice.model.Customer;
 import com.fooddeliverysystem.ordermanagementservice.repository.CustomerRepository;
+import com.fooddeliverysystem.common.security.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +19,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtils jwtUtils;
 
     @Override
     public CustomerDTO registerCustomer(CustomerDTO customerDTO) {
@@ -58,7 +60,13 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         log.info("Customer logged in successfully: {}", email);
-        return convertToDTO(customer);
+        
+        // Generate JWT Token and set to DTO
+        String token = jwtUtils.generateTokenFromOAuth(customer.getEmail());
+        CustomerDTO customerDTO = convertToDTO(customer);
+        customerDTO.setToken(token);
+        
+        return customerDTO;
     }
 
     @Override

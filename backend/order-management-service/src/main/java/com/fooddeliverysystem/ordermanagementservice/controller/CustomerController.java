@@ -12,7 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/customers")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class CustomerController {
 
     private final CustomerService customerService;
@@ -26,8 +26,17 @@ public class CustomerController {
 
     @PostMapping("/login")
     // [FIX VULN-6] Removed @Valid from login as it causes 500 errors when only email/password are provided
-    public CustomerDTO login(@RequestBody CustomerDTO customerDTO) {
-        return customerService.loginCustomer(customerDTO.getEmail(), customerDTO.getPassword());
+    public CustomerDTO login(@RequestBody CustomerDTO customerDTO, jakarta.servlet.http.HttpServletResponse response) {
+        CustomerDTO result = customerService.loginCustomer(customerDTO.getEmail(), customerDTO.getPassword());
+        
+        // [FIX VULN-7] Move JWT to HttpOnly cookie
+        jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("jwt", result.getToken());
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+        
+        result.setToken(null); // Don't expose token in JSON response
+        return result;
     }
 
     @GetMapping("/{customerId}")

@@ -32,6 +32,7 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // [FIX VULN-7] Send and receive cookies for cross-origin requests
         body: JSON.stringify({
           email: email,
           password: password
@@ -44,9 +45,9 @@ const Login = () => {
         throw new Error(data.message || "Login failed");
       }
 
-      // Store the token and user data
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data));
+      // [FIX VULN-7] Removed token from localStorage (it's now in an HttpOnly cookie)
+      // Store the user data (currentUser)
+      localStorage.setItem("currentUser", JSON.stringify(data));
 
       navigate("/restaurants_user");
     } catch (err) {
